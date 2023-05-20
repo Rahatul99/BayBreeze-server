@@ -62,24 +62,38 @@ async function run() {
       }
     });
     
-
     //***************************************//
-    app.post("/addtoy", async( req, res ) => {
+    app.post("/addtoy", async (req, res) => {
       const body = req.body;
-      if(!body){
-        return res.status(404).send({message: 'data not found'})
+      if (!body) {
+        return res.status(404).send({ message: 'data not found' });
       }
       const result = await addedToys.insertOne(body);
       console.log(result);
-
+    
       res.send(result);
-    })
+    });
+    
 
     app.get("/allToys", async(req, res) => {
       const result = await addedToys.find({}).toArray();
       res.send(result);
     })
 
+    app.get('/mytoys/:email', async (req, res) => {
+      const email = req.params.email;
+      console.log('Requested email:', email);
+    
+      try {
+        const toys = await addedToys.find({ email }).toArray();
+        console.log('Toys found:', toys);
+    
+        res.send(toys);
+      } catch (error) {
+        console.error('Error retrieving toys:', error);
+        res.status(500).send('An error occurred');
+      }
+    });
 
     //*********************************//
 
@@ -92,9 +106,7 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
 //mongo
-
 app.get('/', (req, res) => {
     res.send('toy market place')
 })
