@@ -29,6 +29,7 @@ async function run() {
 
 
     const toysCollection = client.db('toysDB').collection('categories');
+    const addedToys = client.db('toysDB').collection('addtoy');
 
     app.get('/categories', async(req, res) => {
       const result = await toysCollection.find().toArray();
@@ -61,6 +62,26 @@ async function run() {
       }
     });
     
+
+    //***************************************//
+    app.post("/addtoy", async( req, res ) => {
+      const body = req.body;
+      if(!body){
+        return res.status(404).send({message: 'data not found'})
+      }
+      const result = await addedToys.insertOne(body);
+      console.log(result);
+
+      res.send(result);
+    })
+
+    app.get("/allToys", async(req, res) => {
+      const result = await addedToys.find({}).toArray();
+      res.send(result);
+    })
+
+
+    //*********************************//
 
     
     await client.db("admin").command({ ping: 1 });
