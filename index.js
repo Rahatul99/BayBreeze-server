@@ -11,7 +11,7 @@ app.use(express.json());
 
 //mongo
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jp6ok1r.mongodb.net/?retryWrites=true&w=majority`;
 
 
@@ -35,8 +35,34 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/categories/:id/:sub_id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const sub_id = req.params.sub_id;
+    
+        const query = { _id: new ObjectId(id) };
+        const result = await toysCollection.findOne(query);
+    
+        if (!result) {
+          res.status(404).send('No ID found');
+          return;
+        }
+    
+        const toy = result.toys.find(toy => toy.sub_id === sub_id);
+        if (!toy) {
+          res.status(404).send('No sub_id found');
+          return;
+        }
+    
+        res.send(toy);
+      } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('An error occurred');
+      }
+    });
+    
 
-
+    
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
