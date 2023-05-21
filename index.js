@@ -83,9 +83,20 @@ async function run() {
 
 
     app.get("/allToys", async (req, res) => {
-      const result = await addedToys.find({}).toArray();
+      console.log(req.query);
+      const page = parseInt(req.query.page) || 0;
+      const limit =parseInt(req.query.limit) || 20;
+      const skip = page * limit;
+      const result = await addedToys.find({}).skip(skip).limit(limit).toArray();
       res.send(result);
     })
+
+    app.get("/totalToys", async(req, res) => {
+      const result = await addedToys.estimatedDocumentCount();
+      res.send({totalToys: result})
+    })
+
+
 
     //--------------------search filed----------------//
     // app.get("/toysSearch/:text", async (req, res) => {
