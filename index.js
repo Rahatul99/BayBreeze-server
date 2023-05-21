@@ -153,6 +153,28 @@ async function run() {
     });
 
     //-------------here we update the data------------------//
+    // app.put("/updateToy/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const body = req.body;
+    //   const filter = { _id: new ObjectId(id) };
+    //   const updateDoc = {
+    //     $set: {
+    //       price: body.price,
+    //       quantity: body.quantity,
+    //       description: body.description
+    //     },
+    //   };
+
+    //   const result = await addedToys.updateOne(filter, updateDoc);
+    //   res.send(result);
+
+    // })
+
+
+
+
+
+
     app.put("/updateToy/:id", async (req, res) => {
       const id = req.params.id;
       const body = req.body;
@@ -164,11 +186,21 @@ async function run() {
           description: body.description
         },
       };
-
-      const result = await addedToys.updateOne(filter, updateDoc);
-      res.send(result);
-
-    })
+    
+      try {
+        const result = await addedToys.updateOne(filter, updateDoc);
+        if (result.modifiedCount > 0) {
+          const updatedToy = await addedToys.findOne(filter);
+          res.send(updatedToy);
+        } else {
+          res.status(404).send('Toy not found');
+        }
+      } catch (error) {
+        console.error('Error updating toy:', error);
+        res.status(500).send('An error occurred');
+      }
+    });
+    
 
     // *********delete method************ */
     app.delete('/allToys/:id', async (req, res) => {
