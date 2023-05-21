@@ -98,6 +98,29 @@ async function run() {
 
 
 
+    app.get('/allToys/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log('Requested id:', id);
+    
+      try {
+        const toy = await addedToys.findOne({ _id: new ObjectId(id) });
+        console.log('Toy found:', toy);
+    
+        if (!toy) {
+          res.status(404).send('No toy found');
+          return;
+        }
+    
+        res.send(toy);
+      } catch (error) {
+        console.error('Error retrieving toy:', error);
+        res.status(500).send('An error occurred');
+      }
+    });
+    
+
+
+
     //--------------------search filed----------------//
     // app.get("/toysSearch/:text", async (req, res) => {
     //   const searchText = req.params.text;
